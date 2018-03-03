@@ -3,11 +3,22 @@ const procedures = require('../procedures/contacts.proc')
 
 let router = express.Router();
 
+router.route('')
+    .get((req, res) => {
+        procedures.getContacts(req.query)
+        .then(contacts => {
+            console.log(contacts.hits.hits);
+            res.status(200).send(contacts.hits.hits)
+        }, err => {
+            console.log(err);
+            res.sendStatus(500);
+        })
+    })
+
 router.route('/')
     .post((req, res) => {
         procedures.createContact(req.body)
         .then(contact => {
-            console.log(contact);
             res.status(200).send(contact);
         }, err => {
             console.log(err);

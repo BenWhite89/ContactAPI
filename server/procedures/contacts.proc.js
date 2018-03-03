@@ -43,6 +43,27 @@ function getContactById(name) {
     })
 }
 
+function getContacts(query) {
+    return new Promise((fulfill, reject) => {
+        esclient.search({
+            index: 'contacts',
+            type: 'contact',
+            body: {
+                query: {
+                    match_all: {}
+                }
+            }
+        })
+        .then(res => {
+            fulfill(res);
+        }, err => {
+            reject(err);
+        })
+    })
+}
+
 module.exports = {
-    createContact: createContact
+    createContact: createContact,
+    getContactById: getContactById,
+    getContacts: getContacts
 }
