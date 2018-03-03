@@ -14,14 +14,13 @@ function createContact(contact) {
                 type: 'contact',
                 body: contact
             }, (err, res, status) => {
-                 err ? reject(err) : fulfill(res);
+                    err ? reject(err) : fulfill(res);
             })
         })
     })
 }
 
-function getContactById(name) {
-    name = name.split("_");
+function getContactByName(name) {
     return new Promise((fulfill, reject) => {
         esclient.search({
             index: 'contacts',
@@ -29,13 +28,11 @@ function getContactById(name) {
             body: {
                 query: {
                     match: {
-                        firstName: name[0] ? name[0] : "",
-                        lastName: name[1] ? name[1] : ""
+                        "id": name
                     }
                 }
             }
-        })
-        .then(res => {
+        }).then(res => {
             fulfill(res);
         }, err => {
             reject(err);
@@ -53,8 +50,7 @@ function getContacts(query) {
                     match_all: {}
                 }
             }
-        })
-        .then(res => {
+        }).then(res => {
             fulfill(res);
         }, err => {
             reject(err);
@@ -62,8 +58,49 @@ function getContacts(query) {
     })
 }
 
+function updateContact(id, contact) {
+    return new Promise((fulfill, reject) => {
+        getContactByName(id)
+        .then(response => {
+            esclient.index({
+                index: 'contacts',
+                type: 'contact',
+                id: response.hits.hits[0]._id,
+                body: contact
+            }).then(res => {
+                fulfill(res);
+            }).catch(err => {
+                reject(err);
+            })
+        }).catch(err => {
+            reject(err);
+        })
+    })
+}
+
+function deleteContact(id) {
+    return new Promise((fulfill, reject) => {
+        getContactByName(id)
+        .then(response => {
+            esclient.delete({
+                index: 'contacts',
+                type: 'contact',
+                id: response.hits.hits[0]._id
+            }).then(res => {
+                fulfill(res);
+            }).catch(err => {
+                reject(err);
+            })
+        }).catch(err => {
+            reject(err);
+        })
+    })
+}
+
 module.exports = {
     createContact: createContact,
-    getContactById: getContactById,
-    getContacts: getContacts
+    getContactByName: getContactByName,
+    getContacts: getContacts,
+    updateContact: updateContact,
+    deleteContact: deleteContact
 }

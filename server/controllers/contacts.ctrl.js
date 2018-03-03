@@ -7,7 +7,6 @@ router.route('')
     .get((req, res) => {
         procedures.getContacts(req.query)
         .then(contacts => {
-            console.log(contacts.hits.hits);
             res.status(200).send(contacts.hits.hits)
         }, err => {
             console.log(err);
@@ -28,7 +27,7 @@ router.route('/')
 
 router.route('/:id')
     .get((req, res) => {
-        procedures.getContactById(req.params.id)
+        procedures.getContactByName(req.params.id)
         .then(contact => {
             res.status(200).send(contact);
         }, err => {
@@ -39,7 +38,7 @@ router.route('/:id')
 
     // remember to add logic to return error if no contact is found
     .put((req, res) => {
-        procedures.updateContact(req.params.id, req.body.contact)
+        procedures.updateContact(req.params.id, req.body)
         .then(contact => {
             res.status(200).send(contact);
         }, err => {
